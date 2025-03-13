@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import config from './config';
 import FlightResult from './FlightResult';
 
 const FlightSearchForm = () => {
@@ -26,8 +27,7 @@ const FlightSearchForm = () => {
     console.log(queryParams.toString());
 
     try {
-      const fetchFlightsURL = "https://chasingcontinentsapi.onrender.com/api/flights";
-      // const fetchFlightsURL = "http://127.0.0.1:5000/api/flights";
+      const fetchFlightsURL = `${config.apiBaseUrl}/api/flights`;
       const response = await fetch(`${fetchFlightsURL}?${queryParams}`, {
         method: "GET",
         headers: {
