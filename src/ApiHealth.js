@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import config from './config';
 
 const ApiHealth = () => {
-  const [status, setStatus] = useState("Checking...");
+  const [status, setStatus] = useState("Checking API Health...");
   const [isHealthy, setIsHealthy] = useState(false);
 
   const checkHealth = async () => {
