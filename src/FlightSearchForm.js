@@ -2,13 +2,19 @@ import React, { useState } from 'react';
 import config from './config';
 import FlightResult from './FlightResult';
 
+// import { bestItinerary, bestSequence, sampleResponse } from './x';
+
 const FlightSearchForm = () => {
   const [flightType, setFlightType] = useState("direct");
   const [startOrigin, setStartOrigin] = useState("");
   const [departureDate, setDepartureDate] = useState("");
   const [departureTime, setDepartureTime] = useState("");
+  const [email, setEmail] = useState("");
   const [result, setResult] = useState(null); // To store the backend response
   const [error, setError] = useState(""); // To store error messages
+
+  // const data = JSON.parse(sampleResponse["data"]);
+  // console.log(data);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -23,11 +29,13 @@ const FlightSearchForm = () => {
       departure_date: departureDate,
       departure_time: departureTime, // Already in 24-hour format
       flight_type: flightType,
+      email,
     });
     console.log(queryParams.toString());
 
     try {
       const fetchFlightsURL = `${config.apiBaseUrl}/api/flights`;
+      // const fetchFlightsURL = `${config.apiBaseUrl}/api/tests`;
       const response = await fetch(`${fetchFlightsURL}?${queryParams}`, {
         method: "GET",
         headers: {
@@ -37,11 +45,13 @@ const FlightSearchForm = () => {
 
       const result = await response.json();
 
-      if (result.status === "success") {
-        console.log(result.data);
+      if (result.status === "SUCCESS") {
+        console.log('yes');
+        console.log(JSON.parse(result.data.best_itinerary));
         setResult(result.data);
         setError("");
       } else {
+        console.log('no');
         setError(result.message);
         setResult(null);
       }
@@ -52,8 +62,8 @@ const FlightSearchForm = () => {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md mt-5">
-      <h1 className="text-2xl font-bold mb-6 text-center">Chasing Continents</h1>
+    <div className="w-full max-w-md p-8 mt-5 bg-white rounded-lg shadow-lg">
+      <h1 className="mb-6 text-2xl font-bold text-center">Chasing Continents</h1>
 
       <form onSubmit={handleSubmit}>
         {/* Flight Type Select */}
@@ -66,7 +76,7 @@ const FlightSearchForm = () => {
             name="flightType"
             value={flightType}
             onChange={(e) => setFlightType(e.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            className="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="direct">Direct Flights Only</option>
             <option value="stops">Flights with Stops</option>
@@ -89,7 +99,7 @@ const FlightSearchForm = () => {
               const truncatedValue = uppercaseValue.slice(0, 3);
               setStartOrigin(truncatedValue);
             }}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            className="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             placeholder="Enter start origin"
           />
         </div>
@@ -105,7 +115,7 @@ const FlightSearchForm = () => {
             name="departureDate"
             value={departureDate}
             onChange={(e) => setDepartureDate(e.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            className="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
 
@@ -120,14 +130,29 @@ const FlightSearchForm = () => {
             name="departureTime"
             value={departureTime}
             onChange={(e) => setDepartureTime(e.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            className="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-2 mb-2 border rounded-md"
           />
         </div>
 
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
           Search Flights
         </button>
@@ -135,13 +160,16 @@ const FlightSearchForm = () => {
 
       {/* Display Error Message */}
       {error && (
-        <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
+        <div className="p-4 mt-4 text-center text-red-700 bg-red-100 border border-red-400 rounded-md">
           {error}
         </div>
       )}
 
       {/* Display Results */}
       {/* {result && <FlightResult data={result} />} */}
+      <div className="p-6">
+        {result && <FlightResult bestItinerary={JSON.parse(result.best_itinerary)} bestSequence={result.best_sequence} />}
+      </div>
     </div>
   )
 }
