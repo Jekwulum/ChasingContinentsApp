@@ -122,7 +122,7 @@ const FlightSearchForm = () => {
         {/* Time of Departure Input */}
         <div className="mb-4">
           <label htmlFor="departureTime" className="block text-sm font-medium text-gray-700">
-            Time of Departure (24HR)
+            Arrival Time at PUQ
           </label>
           <input
             type="time"
